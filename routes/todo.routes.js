@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
     try {
-        const data = await db.query('SELECT * FROM primarytable;');
+        const data = await db.query('SELECT * FROM todo;');
 
         res.status(200).json(data.rows);
     } catch (error) {
@@ -15,12 +15,12 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const { key, value } = req.body;
+    const { task } = req.body;
 
     try {
         const data = await db.query(
-            'INSERT INTO primarytable (key, value) VALUES ($1, $2);',
-            [key, value]
+            'INSERT INTO todo (task) VALUES ($1);',
+            [task]
         );
 
         res.status(200).json({
@@ -34,12 +34,12 @@ router.post('/', async (req, res) => {
 });
 
 router.delete('/', async (req, res) => {
-    const { key } = req.body;
+    const { id } = req.body;
 
     try {
         const data = await db.query(
-            'DELETE FROM primarytable WHERE key = $1;',
-            [key]
+            'DELETE FROM todo WHERE id = $1;',
+            [id]
         );
 
         res.status(200).json({
