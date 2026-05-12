@@ -5,20 +5,26 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
     try {
-        const data = await db.query('SELECT * FROM todo;');
-        res.status(200).json({ todo: data.rows });
+        const data = await db.query('SELECT * FROM primarytable;');
+
+        res.status(200).json({
+            primarytable: data.rows
+        });
+
     } catch (error) {
         console.log(error);
     }
 });
 
 router.post('/', async (req, res) => {
+
     const { task } = req.body;
 
     try {
+
         const data = await db.query(
-            'INSERT INTO todo (task) VALUES ($1);',
-            [task]
+            'INSERT INTO primarytable (key, value) VALUES ($1, $2);',
+            ['1', task]
         );
 
         res.status(200).json({
@@ -31,20 +37,27 @@ router.post('/', async (req, res) => {
 });
 
 router.delete('/', async (req, res) => {
-    const { id } = req.body;
+
+    const { key } = req.body;
 
     const data = await db.query(
-        "SELECT * FROM todo WHERE id = $1;",
-        [id]
+        'SELECT * FROM primarytable WHERE key = $1;',
+        [key]
     );
 
     if (data.rows.length === 0) {
-        res.json({ message: "there no such task" });
+
+        res.json({
+            message: 'there no such task'
+        });
+
     } else {
+
         try {
+
             const result = await db.query(
-                "DELETE FROM todo WHERE id = $1;",
-                [id]
+                'DELETE FROM primarytable WHERE key = $1;',
+                [key]
             );
 
             res.status(200).json({
